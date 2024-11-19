@@ -113,7 +113,7 @@ foreach ($p in $profiles) {
     New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Feeds" -Force
     New-ItemProperty -Path "$path\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
-    Set-ItemProperty -Path "$path\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
+    Set-ItemProperty -Path "$path\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type Dword -Value 2 
     
 }
 # Remove shortcuts from the Public Desktop
