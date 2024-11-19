@@ -20,12 +20,12 @@ function Confirm-Action {
 }
 
 
-$destinationPath = "C:\setups"
-$exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
+# $destinationPath = "C:\setups"
+# $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
 
-foreach ($exe in $exeFiles) {
-    Start-Process -FilePath $exe.FullName -NoNewWindow 
-}
+# foreach ($exe in $exeFiles) {
+#     Start-Process -FilePath $exe.FullName -NoNewWindow 
+# }
 
 
 $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
