@@ -27,8 +27,6 @@ foreach ($exe in $exeFiles) {
     Start-Process -FilePath $exe.FullName -NoNewWindow 
 }
 
-Remove-Item -Path "$env:APPDATA\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
-Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
 
 $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
 if ($arch -match "64") {
@@ -38,8 +36,6 @@ else {
     Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
 }
 
-Remove-Item -Recurse -Force "$env:USERPROFILE\OneDrive" 
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Microsoft\OneDrive" 
 Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
 
 Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
@@ -98,7 +94,13 @@ $userProfiles = Get-ChildItem "C:\Users" -Directory | Where-Object {
 }
 # Iterate through each user's desktop folder
 foreach ($profile in $userProfiles) {
-    $desktopPath = "$($profile.FullName)\Desktop"
+    $name = $profile.name
+    $fullname = $profile.FullName
+    $desktopPath = "$fullname\Desktop"
+    $SID = (Get-LocalUser $name).SID
+    
+    Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
+    Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
     if (Test-Path $desktopPath) {
         # Remove all .lnk (shortcut) files
         Remove-Item "$desktopPath\*.lnk" -Force -ErrorAction SilentlyContinue
