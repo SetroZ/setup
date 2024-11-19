@@ -76,8 +76,9 @@ if (-Not (Test-Path -Path $regPath)) {
 }
 New-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1 -PropertyType DWord -Force
 
-$regKey = "HKU\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies"
+$regKey = "HKU:\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies"
 New-Item -Path $regKey -Force
+New-Item -Path $regKey\"Uninstall" -Force
 New-ItemProperty -Path $regKey\"Uninstall" -Name "NoAddRemovePrograms" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path $regKey\"Explorer" -Name "NoWindowsUpdate" -Value 1 -PropertyType DWord -Force
 
