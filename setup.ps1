@@ -38,35 +38,35 @@ else {
 
 Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
 
-Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
-Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaButton" -Value 0
-Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2
+New-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
+New-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaButton" -Value 0 -PropertyType DWord -Force
+New-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
 if (-Not (Test-Path -Path $regPath)) {
     New-Item -Path $regPath -Force
 }
-Set-ItemProperty -Path $regPath -Name "EnableFeeds" -Value 0
+New-ItemProperty -Path $regPath -Name "EnableFeeds" -Value 0 -PropertyType DWord -Force
 
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_NotifyMoreTiles" -Value 0
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMorePrograms" -Value 1
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackProgs" -Value 0
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuSuggestions" -Value 1
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_NotifyMoreTiles" -Value 0 -PropertyType DWord -Force
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMorePrograms" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackProgs" -Value 0 -PropertyType DWord -Force
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuSuggestions" -Value 1 -PropertyType DWord -Force
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
 if (-Not (Test-Path -Path $regPath)) {
     New-Item -Path $regPath -Force
 }
-Set-ItemProperty -Path $regPath -Name "NoChangeStartMenu" -Value 1
-Set-ItemProperty -Path $regPath -Name "HideAppList" -Value 1
-Set-ItemProperty -Path $regPath -Name "HideRecentlyAddedApps" -Value 1
-Set-ItemProperty -Path $regPath -Name "NoInstrumentation" -Value 1
+New-ItemProperty -Path $regPath -Name "NoChangeStartMenu" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path $regPath -Name "HideAppList" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path $regPath -Name "HideRecentlyAddedApps" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path $regPath -Name "NoInstrumentation" -Value 1 -PropertyType DWord -Force
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\CloudContent"
 if (-Not (Test-Path -Path $regPath)) {
     New-Item -Path $regPath -Force
 }
-Set-ItemProperty -Path $regPath -Name "DisableWindowsConsumerFeatures" -Value 1
+New-ItemProperty -Path $regPath -Name "DisableWindowsConsumerFeatures" -Value 1 -PropertyType DWord -Force
 
 
 $studentUsername = "Student"
@@ -76,15 +76,15 @@ $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer"
 if (-Not (Test-Path -Path $regPath)) {
     New-Item -Path $regPath -Force
 }
-Set-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1
+New-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1 -PropertyType DWord -Force
 
 $regKey = "HKU\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies"
 New-Item -Path $regKey -Force
-Set-ItemProperty -Path $regKey\"Uninstall" -Name "NoAddRemovePrograms" -Value 1
-Set-ItemProperty -Path $regKey\"Explorer" -Name "NoWindowsUpdate" -Value 1
+New-ItemProperty -Path $regKey\"Uninstall" -Name "NoAddRemovePrograms" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path $regKey\"Explorer" -Name "NoWindowsUpdate" -Value 1 -PropertyType DWord -Force
 
 
-Set-ItemProperty -Path $regKey\"Explorer" -Name "NoControlPanel" -Value 1
+New-ItemProperty -Path $regKey\"Explorer" -Name "NoControlPanel" -Value 1 -PropertyType DWord -Force
 
 
 #Remove Edge
