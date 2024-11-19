@@ -2,7 +2,7 @@ $adminCheck = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -match '
 
 if (-not $adminCheck) {
     # Relaunch PowerShell as Administrator
-    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass" "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
+    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass" , "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
     return
 }
 
@@ -45,7 +45,7 @@ New-LocalUser -Name $studentUsername -Password (ConvertTo-SecureString $studentP
 Add-LocalGroupMember -Group "Users" -Member $studentUsername
 Set-LocalUser -Name $studentUsername -PasswordNeverExpires $true
 Write-Host "Users created successfully!"
-
+# psexec.exe -u Student -p codingisfun cmd.exe \c exit
 
 
 $ParentDirectory = Split-Path -Path $PSScriptRoot -Parent
