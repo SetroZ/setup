@@ -2,7 +2,7 @@ $adminCheck = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -match '
 
 if (-not $adminCheck) {
     # Relaunch PowerShell as Administrator
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
+    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass" "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
     return
 }
 
@@ -22,7 +22,7 @@ function Confirm-Action {
 
 
 Write-Host "Connecting to wifi"
-netsh wlan add profile filename="D:\setups\profile.xml"
+netsh wlan add profile filename="D:\setups\scripts\profile.xml"
 netsh wlan connect name="Ramsden Students"
 
 Write-Host "Connected To Ramsden Wifi"

@@ -1,10 +1,8 @@
-
-
 $adminCheck = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544'
 
 if (-not $adminCheck) {
     # Relaunch PowerShell as Administrator
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
+    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass" "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
     return
 }
 
@@ -26,27 +24,27 @@ $destinationPath = "C:\setups"
 $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
 
 foreach ($exe in $exeFiles) {
-    Start-Process -FilePath $exe.FullName -NoNewWindow -Wait
+    Start-Process -FilePath $exe.FullName -NoNewWindow 
 }
 
 Remove-Item -Path "$env:APPDATA\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
-Remove-Item -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
+Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
 
 $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
 if ($arch -match "64") {
-    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow
+    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
 }
 else {
-    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow
+    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
 }
 
 Remove-Item -Recurse -Force "$env:USERPROFILE\OneDrive" 
 Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Microsoft\OneDrive" 
 Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
 
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaButton" -Value 0
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2
+Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
+Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaButton" -Value 0
+Set-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
 if (-Not (Test-Path -Path $regPath)) {
@@ -74,10 +72,6 @@ if (-Not (Test-Path -Path $regPath)) {
 }
 Set-ItemProperty -Path $regPath -Name "DisableWindowsConsumerFeatures" -Value 1
 
-    (New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() |
-% { $_.Verbs() } |
-? { $_.Name -match 'Un.*pin from Start' } |
-% { $_.DoIt() }
 
 $studentUsername = "Student"
 $studentSID = (Get-LocalUser $studentUsername).SID
@@ -88,13 +82,13 @@ if (-Not (Test-Path -Path $regPath)) {
 }
 Set-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1
 
-$regKey = "HKU\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+$regKey = "HKU\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies"
 New-Item -Path $regKey -Force
-Set-ItemProperty -Path $regKey -Name "NoAddRemovePrograms" -Value 1
-Set-ItemProperty -Path $regKey -Name "NoWindowsUpdate" -Value 1
+Set-ItemProperty -Path $regKey\"Uninstall" -Name "NoAddRemovePrograms" -Value 1
+Set-ItemProperty -Path $regKey\"Explorer" -Name "NoWindowsUpdate" -Value 1
 
-Set-ItemProperty -Path $regKey -Name "NoUninstall" -Value 1
-Set-ItemProperty -Path $regKey -Name "NoControlPanel" -Value 1
+
+Set-ItemProperty -Path $regKey\"Explorer" -Name "NoControlPanel" -Value 1
 
 
 #Remove Edge
@@ -119,8 +113,8 @@ if (Test-Path $publicDesktopPath) {
 Write-Host "Desktop shortcuts removed for all users."
 
 
-Stop-Process -ProcessName explorer -Force
-Start-Process explorer
+# Stop-Process -ProcessName explorer -Force
+# Start-Process explorer
 
 
 if (Confirm-Action "Explorer lagging? Restart Computer") {
