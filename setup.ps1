@@ -78,6 +78,7 @@ New-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1 -PropertyType DWord 
 
 $regKey = "Microsoft.PowerShell.Core\Registry::HKEY_USERS\$($studentSID)\Software\Microsoft\Windows\CurrentVersion\Policies"
 New-Item -Path "$regKey\Uninstall" -Force
+New-Item -Path "$regKey\Explorer" -Force
 New-ItemProperty -Path "$regKey\Uninstall" -Name "NoAddRemovePrograms" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path "$regKey\Explorer" -Name "NoWindowsUpdate" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path "$regKey\Explorer" -Name "NoControlPanel" -Value 1 -PropertyType DWord -Force
