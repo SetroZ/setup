@@ -28,19 +28,17 @@ function Confirm-Action {
 # }
 
 
-$arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-if ($arch -match "64") {
-    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-}
-else {
-    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-}
+# $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+# if ($arch -match "64") {
+#     Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+# }
+# else {
+#     Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+# }
 
 Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
 
-New-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
-New-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaButton" -Value 0 -PropertyType DWord -Force
-New-ItemProperty -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
+
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
 if (-Not (Test-Path -Path $regPath)) {
@@ -97,14 +95,22 @@ foreach ($profile in $userProfiles) {
     $name = $profile.name
     $fullname = $profile.FullName
     $desktopPath = "$fullname\Desktop"
-    $SID = (Get-LocalUser $name).SID
+  
     
     Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
-    Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
+  
     if (Test-Path $desktopPath) {
         # Remove all .lnk (shortcut) files
         Remove-Item "$desktopPath\*.lnk" -Force -ErrorAction SilentlyContinue
     }
+}
+$profiles = @('Admin', 'Student')
+foreach ($p in $profile) {
+    $SID = (Get-LocalUser $p).SID
+    Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
+    New-ItemProperty -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
+    New-ItemProperty -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
+    New-ItemProperty -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
 }
 # Remove shortcuts from the Public Desktop
 $publicDesktopPath = "C:\Users\Public\Desktop"
