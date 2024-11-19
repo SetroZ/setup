@@ -105,7 +105,7 @@ foreach ($profile in $userProfiles) {
     }
 }
 $profiles = @('Admin', 'Student')
-foreach ($p in $profile) {
+foreach ($p in $profiles) {
     $SID = (Get-LocalUser $p).SID
     $t = "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Feeds"
     Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
