@@ -1,4 +1,13 @@
 
+
+$adminCheck = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544'
+
+if (-not $adminCheck) {
+    # Relaunch PowerShell as Administrator
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
+    return
+}
+
 function Confirm-Action {
     param (
         [string]$Message
@@ -21,7 +30,7 @@ foreach ($exe in $exeFiles) {
 }
 
 Remove-Item -Path "$env:APPDATA\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
-Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
+Remove-Item -Path "HKU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
 
 $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
 if ($arch -match "64") {
@@ -110,8 +119,13 @@ if (Test-Path $publicDesktopPath) {
 Write-Host "Desktop shortcuts removed for all users."
 
 
-
-
 Stop-Process -ProcessName explorer -Force
 Start-Process explorer
 
+
+if (Confirm-Action "Explorer lagging? Restart Computer") {
+    Restart-Computer -Force
+}
+
+
+Read-Host

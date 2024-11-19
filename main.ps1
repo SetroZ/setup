@@ -53,16 +53,10 @@ if (Confirm-Action "Copy Files to C:\setups") {
     $Destination = "C:\setups"
     Copy-Item -Path $ParentDirectory -Destination $Destination -Recurse
     Write-Host "Copied"
+    $scriptPath = "C:\setup\scripts\setup.ps1"
+    # Start a new PowerShell process with elevated privileges
+    Start-Process powershell -ArgumentList "-NoExit", "-File", $scriptPath -Verb RunAs
 }
-
-
-
-$scriptPath = "C:\setup\scripts\setup.ps1"
-
-# Start a new PowerShell process with elevated privileges
-Start-Process powershell -ArgumentList "-NoExit", "-File", $scriptPath -Verb RunAs
-
-
 
 
 Read-Host 
