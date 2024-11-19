@@ -76,12 +76,10 @@ if (-Not (Test-Path -Path $regPath)) {
 }
 New-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1 -PropertyType DWord -Force
 
-$regKey = "HKU\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies"
+$regKey = "Microsoft.PowerShell.Core\Registry::HKEY_USERS\$($SID)\Software\Microsoft\Windows\CurrentVersion\Policies"
 New-Item -Path "$regKey\Uninstall" -Force
 New-ItemProperty -Path "$regKey\Uninstall" -Name "NoAddRemovePrograms" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path "$regKey\Explorer" -Name "NoWindowsUpdate" -Value 1 -PropertyType DWord -Force
-
-
 New-ItemProperty -Path "$regKey\Explorer" -Name "NoControlPanel" -Value 1 -PropertyType DWord -Force
 
 
@@ -107,14 +105,14 @@ foreach ($profile in $userProfiles) {
 $profiles = @('Admin', 'Student')
 foreach ($p in $profiles) {
     $SID = (Get-LocalUser $p).SID
-    $t = "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Feeds"
+    $path = "Microsoft.PowerShell.Core\Registry::HKEY_USERS\$($SID)\Software\Microsoft\Windows\CurrentVersion"
     Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
     New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force
     New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Search" -Force
     New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Feeds" -Force
-    New-ItemProperty -Path "HKU:\$($SID)\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
-    New-ItemProperty -Path "Microsoft.PowerShell.Core\Registry::HKEY_USERS\$($SID)\Software\Microsoft\Windows\CurrentVersion\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
-    New-ItemProperty -Path $t -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
+    New-ItemProperty -Path "$path\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
+    New-ItemProperty -Path "$path\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
+    New-ItemProperty -Path "$path\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
     
 }
 # Remove shortcuts from the Public Desktop
