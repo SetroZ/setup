@@ -2,7 +2,7 @@ $adminCheck = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -match '
 
 if (-not $adminCheck) {
     # Relaunch PowerShell as Administrator
-    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass" "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
+    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass" , "-Command", $MyInvocation.MyCommand.Definition -Verb RunAs
     return
 }
 
