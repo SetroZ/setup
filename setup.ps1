@@ -77,13 +77,12 @@ if (-Not (Test-Path -Path $regPath)) {
 New-ItemProperty -Path $regPath -Name "DisableMSI" -Value 1 -PropertyType DWord -Force
 
 $regKey = "HKU\$studentSID\Software\Microsoft\Windows\CurrentVersion\Policies"
-New-Item -Path $regKey -Force
-New-Item -Path $regKey\"Uninstall" -Force
-New-ItemProperty -Path $regKey\"Uninstall" -Name "NoAddRemovePrograms" -Value 1 -PropertyType DWord -Force
-New-ItemProperty -Path $regKey\"Explorer" -Name "NoWindowsUpdate" -Value 1 -PropertyType DWord -Force
+New-Item -Path "$regKey\Uninstall" -Force
+New-ItemProperty -Path "$regKey\Uninstall" -Name "NoAddRemovePrograms" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path "$regKey\Explorer" -Name "NoWindowsUpdate" -Value 1 -PropertyType DWord -Force
 
 
-New-ItemProperty -Path $regKey\"Explorer" -Name "NoControlPanel" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path "$regKey\Explorer" -Name "NoControlPanel" -Value 1 -PropertyType DWord -Force
 
 
 #Remove Edge
@@ -109,6 +108,9 @@ $profiles = @('Admin', 'Student')
 foreach ($p in $profile) {
     $SID = (Get-LocalUser $p).SID
     Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
+    New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force
+    New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Search" -Force
+    New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Feeds" -Force
     New-ItemProperty -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Value 2 -PropertyType DWord -Force
