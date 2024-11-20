@@ -106,7 +106,7 @@ foreach ($p in $profiles) {
     New-ItemProperty -Path "$path\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\SearchSettings" -Name "IsDynamicSearchBoxEnabled" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\Explorer\Advanced" -Name "Start_ShowApps" -Value 0 -PropertyType DWord -Force
-
+    New-ItemProperty -Path "$path\Explorer" -Name "DisableNotificationCenter" -Value 1 -PropertyType DWord -Force
 }
 # Remove shortcuts from the Public Desktop
 $publicDesktopPath = "C:\Users\Public\Desktop"
@@ -114,21 +114,18 @@ if (Test-Path $publicDesktopPath) {
     Remove-Item "$publicDesktopPath\*.lnk" -Force -ErrorAction SilentlyContinue
 }
 
-Write-Host "Desktop shortcuts removed for all users."
-
-
-$arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-if ($arch -match "64") {
-    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-}
-else {
-    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-}
-
-Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive"  
-
-
-# Stop-Process -ProcessName explorer -Force
-# Start-Process explorer
-
+Write-Host "Done!"
 Read-Host
+
+
+# Write-Host "Restarting explorer"
+
+# taskkill /f /im explorer.exe
+# Start-Process explorer.exe
+
+# if (Confirm-Action "Explorer lag? Restart ") {
+#     Stop-Service -Name wuauserv -Force
+# Restart-Computer -Force
+# }
+
+
