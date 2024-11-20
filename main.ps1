@@ -76,7 +76,9 @@ Set-LocalUser -Name $studentUsername -PasswordNeverExpires $true
 Write-Host "Users created successfully!"
 
 $psecPath = "C:/setups/scripts/PsExec.exe"
-& $psecPath -u $studentUsername -p $studentPassword cmd.exe \c exit
+$arguments = "-u", $studentUsername, "-p", $studentPassword, "cmd.exe", "/c", "exit"
+
+Start-Process -FilePath $psecPath -ArgumentList $arguments -NoNewWindow
 
 
 $ParentDirectory = Split-Path -Path $PSScriptRoot -Parent

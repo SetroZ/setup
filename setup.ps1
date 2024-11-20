@@ -20,6 +20,13 @@ function Confirm-Action {
 }
 
 
+
+
+
+
+
+
+
 if (Confirm-Action "Run Installers") {
     $destinationPath = "C:\setups"
     $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
@@ -29,8 +36,8 @@ if (Confirm-Action "Run Installers") {
     foreach ($exe in $exeFiles) {
 
         if ($exe.Name -eq "Minecraft Education Installer.exe" -or $exe.Name -eq "makecode.exe") {
-
-            & $psexecPath -u $username -p $password $exe.FullName
+            $arguments = "-u", $username, "-p", $password, $exe.FullName
+            Start-Process -FilePath $psexecPath -ArgumentList $arguments -NoNewWindow
         }
         else {
             Start-Process -FilePath $exe.FullName -NoNewWindow
