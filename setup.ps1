@@ -120,7 +120,7 @@ foreach ($p in $profiles) {
     New-ItemProperty -Path "$path\Explorer\Advanced" -Name "Start_ShowApps" -Value 0 -PropertyType DWord -Force
 
 
-
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDynamicSearchBoxEnabled" /d 0 /t REG_DWORD /f
 
 }
 # Remove shortcuts from the Public Desktop
