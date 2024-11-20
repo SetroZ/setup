@@ -19,22 +19,25 @@ function Confirm-Action {
     }
 }
 
+if ( Confirm-Action "Run Installers") {
+    $destinationPath = "C:\setups"
+    $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
+    
+    foreach ($exe in $exeFiles) {
+        Start-Process -FilePath $exe.FullName -NoNewWindow 
+    }
+}
 
-# $destinationPath = "C:\setups"
-# $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
-
-# foreach ($exe in $exeFiles) {
-#     Start-Process -FilePath $exe.FullName -NoNewWindow 
-# }
 
 
-# $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-# if ($arch -match "64") {
-#     Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-# }
-# else {
-#     Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-# }
+
+$arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+if ($arch -match "64") {
+    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+}
+else {
+    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+}
 
 Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
 
@@ -50,6 +53,8 @@ New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer
 New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMorePrograms" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackProgs" -Value 0 -PropertyType DWord -Force
 New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuSuggestions" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuSuggestions" -Value 1 -PropertyType DWord -Force
+
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
 if (-Not (Test-Path -Path $regPath)) {
@@ -94,10 +99,8 @@ foreach ($profile in $userProfiles) {
     $name = $profile.name
     $fullname = $profile.FullName
     $desktopPath = "$fullname\Desktop"
-  
-    
     Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
-  
+    Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
     if (Test-Path $desktopPath) {
         # Remove all .lnk (shortcut) files
         Remove-Item "$desktopPath\*.lnk" -Force -ErrorAction SilentlyContinue
@@ -107,17 +110,18 @@ $profiles = @('Admin', 'Student')
 foreach ($p in $profiles) {
     $SID = (Get-LocalUser $p).SID
     $path = "Microsoft.PowerShell.Core\Registry::HKEY_USERS\$($SID)\Software\Microsoft\Windows\CurrentVersion"
-    Remove-Item -Path "HKU\$SID\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse 
-    New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force
-    New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Search" -Force
-    New-Item -Path "HKU\$($SID)\Software\Microsoft\Windows\CurrentVersion\Feeds" -Force
+    Remove-Item -Path "$path\Explorer\Taskband" -Force -Recurse 
+    New-Item -Path "$path\Explorer\Advanced" -Force
+    New-Item -Path "$path\Search" -Force
+    New-Item -Path "$path\Feeds" -Force
     New-ItemProperty -Path "$path\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
-    TASKKILL /IM explorer.exe /F
+    New-ItemProperty -Path "$path\SearchSettings" -Name "IsDynamicSearchBoxEnabled" -Value 0 -PropertyType DWord -Force
+    New-ItemProperty -Path "$path\Explorer\Advanced" -Name "Start_ShowApps" -Value 0 -PropertyType DWord -Force
 
-    Set-ItemProperty -Path "$path\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type Dword -Value 2 
-    Start-Process explorer.exe
-    
+
+
+
 }
 # Remove shortcuts from the Public Desktop
 $publicDesktopPath = "C:\Users\Public\Desktop"
@@ -130,7 +134,6 @@ Write-Host "Desktop shortcuts removed for all users."
 
 # Stop-Process -ProcessName explorer -Force
 # Start-Process explorer
-
 
 if (Confirm-Action "Explorer lagging? Restart Computer") {
     Restart-Computer -Force
