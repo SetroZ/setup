@@ -19,27 +19,29 @@ function Confirm-Action {
     }
 }
 
-if ( Confirm-Action "Run Installers") {
+
+if (Confirm-Action "Run Installers") {
     $destinationPath = "C:\setups"
     $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
-    
+    $psexecPath = "./PsExec.exe"
+    $username = "Student"
+    $password = "codingisfun"
     foreach ($exe in $exeFiles) {
-        Start-Process -FilePath $exe.FullName -NoNewWindow 
+
+        if ($exe.Name -eq "Minecraft Education Installer.exe" -or $exe.Name -eq "makecode.exe") {
+
+            & $psexecPath -u $username -p $password $exe.FullName
+        }
+        else {
+            Start-Process -FilePath $exe.FullName -NoNewWindow
+        }
     }
 }
 
 
 
 
-$arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-if ($arch -match "64") {
-    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-}
-else {
-    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
-}
 
-Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
 
 
 
@@ -53,14 +55,13 @@ New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer
 New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuMorePrograms" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_TrackProgs" -Value 0 -PropertyType DWord -Force
 New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuSuggestions" -Value 1 -PropertyType DWord -Force
-New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoStartMenuSuggestions" -Value 1 -PropertyType DWord -Force
 
 
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
 if (-Not (Test-Path -Path $regPath)) {
     New-Item -Path $regPath -Force
 }
-New-ItemProperty -Path $regPath -Name "NoChangeStartMenu" -Value 1 -PropertyType DWord -Force
+New-ItemProperty -Path $regPath -Name "NoChangeStartMenu" -Value 0 -PropertyType DWord -Force
 New-ItemProperty -Path $regPath -Name "HideAppList" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path $regPath -Name "HideRecentlyAddedApps" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path $regPath -Name "NoInstrumentation" -Value 1 -PropertyType DWord -Force
@@ -100,7 +101,6 @@ foreach ($profile in $userProfiles) {
     $fullname = $profile.FullName
     $desktopPath = "$fullname\Desktop"
     Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
-    Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
     if (Test-Path $desktopPath) {
         # Remove all .lnk (shortcut) files
         Remove-Item "$desktopPath\*.lnk" -Force -ErrorAction SilentlyContinue
@@ -119,9 +119,6 @@ foreach ($p in $profiles) {
     New-ItemProperty -Path "$path\SearchSettings" -Name "IsDynamicSearchBoxEnabled" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\Explorer\Advanced" -Name "Start_ShowApps" -Value 0 -PropertyType DWord -Force
 
-
-    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDynamicSearchBoxEnabled" /d 0 /t REG_DWORD /f
-
 }
 # Remove shortcuts from the Public Desktop
 $publicDesktopPath = "C:\Users\Public\Desktop"
@@ -132,10 +129,22 @@ if (Test-Path $publicDesktopPath) {
 Write-Host "Desktop shortcuts removed for all users."
 
 
+$arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+if ($arch -match "64") {
+    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+}
+else {
+    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+}
+
+Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
+
+
 # Stop-Process -ProcessName explorer -Force
 # Start-Process explorer
 
 if (Confirm-Action "Explorer lagging? Restart Computer") {
+    Stop-Service -Name wuauserv -Force #windows update disable
     Restart-Computer -Force
 }
 

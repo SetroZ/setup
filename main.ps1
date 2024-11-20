@@ -20,6 +20,35 @@ function Confirm-Action {
     }
 }
 
+if (Confirm-Action "Delete all users") {
+    # Get all local user accounts except "Admin"
+    $users = Get-LocalUser | Where-Object { $_.Name -ne "Admin" -and $_.Enabled -eq $true }
+
+    foreach ($user in $users) {
+        try {
+            # Remove the user account
+            Remove-LocalUser -Name $user.Name
+            Write-Output "Deleted user account: $($user.Name)"
+        
+            # Remove the corresponding user folder
+            $userFolder = Join-Path -Path "C:\Users" -ChildPath $user.Name
+            if (Test-Path -Path $userFolder) {
+                Remove-Item -Path $userFolder -Recurse -Force
+                Write-Output "Deleted user folder: $userFolder"
+            }
+            else {
+                Write-Output "User folder not found: $userFolder"
+            }
+        }
+        catch {
+            Write-Output "Failed to delete user account or folder: $($user.Name) - $_"
+        }
+    }
+
+    # Confirm remaining user accounts
+    Write-Output "Remaining user accounts:"
+    Get-LocalUser
+}
 
 Write-Host "Connecting to wifi"
 netsh wlan add profile filename="D:\setups\scripts\profile.xml"
@@ -50,7 +79,7 @@ Write-Host "Users created successfully!"
 
 
 $ParentDirectory = Split-Path -Path $PSScriptRoot -Parent
-if (Confirm-Action "Copy Files to C:\setups") {
+if (Confirm-Action "Copy and Run setup script?") {
     $Destination = "C:\setups"
     Copy-Item -Path $ParentDirectory -Destination $Destination -Recurse
     Write-Host "Copied"
