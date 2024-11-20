@@ -75,7 +75,8 @@ Add-LocalGroupMember -Group "Users" -Member $studentUsername
 Set-LocalUser -Name $studentUsername -PasswordNeverExpires $true
 Write-Host "Users created successfully!"
 
-& ./PsExec.exe -u $studentUsername -p $studentPassword cmd.exe \c exit
+$psecPath = "C:/setups/scripts/PsExec.exe"
+& $psecPath -u $studentUsername -p $studentPassword cmd.exe \c exit
 
 
 $ParentDirectory = Split-Path -Path $PSScriptRoot -Parent

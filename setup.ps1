@@ -23,7 +23,7 @@ function Confirm-Action {
 if (Confirm-Action "Run Installers") {
     $destinationPath = "C:\setups"
     $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
-    $psexecPath = "./PsExec.exe"
+    $psexecPath = "C:/setups/scripts/PsExec.exe"
     $username = "Student"
     $password = "codingisfun"
     foreach ($exe in $exeFiles) {
