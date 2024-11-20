@@ -82,16 +82,16 @@ Start-Process -FilePath $psecPath -ArgumentList $arguments -NoNewWindow
 
 
 $ParentDirectory = Split-Path -Path $PSScriptRoot -Parent
-if (Confirm-Action "Copy and Run setup script?") {
+if (Confirm-Action "Copy to C:\setups ?") {
     $Destination = "C:\setups"
     Copy-Item -Path $ParentDirectory -Destination $Destination -Recurse
     Write-Host "Copied"
-    $scriptPath = "C:\setup\scripts\setup.ps1"
-    # Start a new PowerShell process with elevated privileges
-    Start-Process powershell -ArgumentList "-NoExit", "-File", $scriptPath -Verb RunAs
+    # $scriptPath = "C:\setup\scripts\setup.ps1"
+    # # Start a new PowerShell process with elevated privileges
+    # Start-Process powershell -ArgumentList "-NoExit", "-File", $scriptPath -Verb RunAs
 }
 
-
+Write-Host "Sign in into student and run C:\setups\scripts\setup.ps1"
 Read-Host 
 
 

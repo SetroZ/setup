@@ -19,29 +19,11 @@ function Confirm-Action {
     }
 }
 
-
-
-
-
-
-
-
-
 if (Confirm-Action "Run Installers") {
     $destinationPath = "C:\setups"
     $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
-    $psexecPath = "C:/setups/scripts/PsExec.exe"
-    $username = "Student"
-    $password = "codingisfun"
     foreach ($exe in $exeFiles) {
-
-        if ($exe.Name -eq "Minecraft Education Installer.exe" -or $exe.Name -eq "makecode.exe") {
-            $arguments = "-u", $username, "-p", $password, $exe.FullName
-            Start-Process -FilePath $psexecPath -ArgumentList $arguments -NoNewWindow
-        }
-        else {
-            Start-Process -FilePath $exe.FullName -NoNewWindow
-        }
+        Start-Process -FilePath $exe.FullName -NoNewWindow
     }
 }
 
@@ -104,7 +86,6 @@ $userProfiles = Get-ChildItem "C:\Users" -Directory | Where-Object {
 }
 # Iterate through each user's desktop folder
 foreach ($profile in $userProfiles) {
-    $name = $profile.name
     $fullname = $profile.FullName
     $desktopPath = "$fullname\Desktop"
     Remove-Item -Path "$fullname\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse 
@@ -144,16 +125,10 @@ else {
     Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
 }
 
-Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive" 
+Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive"  
 
 
 # Stop-Process -ProcessName explorer -Force
 # Start-Process explorer
-
-if (Confirm-Action "Explorer lagging? Restart Computer") {
-    Stop-Service -Name wuauserv -Force #windows update disable
-    Restart-Computer -Force
-}
-
 
 Read-Host
