@@ -99,9 +99,7 @@ foreach ($p in $profiles) {
     $SID = (Get-LocalUser $p).SID
     $path = "Microsoft.PowerShell.Core\Registry::HKEY_USERS\$($SID)\Software\Microsoft\Windows\CurrentVersion"
     Remove-Item -Path "$path\Explorer\Taskband" -Force -Recurse 
-    New-Item -Path "$path\Explorer\Advanced" -Force
     New-Item -Path "$path\Search" -Force
-    New-Item -Path "$path\Feeds" -Force
     New-ItemProperty -Path "$path\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\Search" -Name "ShowCortanaButton" -Value 0 -PropertyType DWord -Force
     New-ItemProperty -Path "$path\SearchSettings" -Name "IsDynamicSearchBoxEnabled" -Value 0 -PropertyType DWord -Force
@@ -109,10 +107,26 @@ foreach ($p in $profiles) {
     New-ItemProperty -Path "$path\Explorer" -Name "DisableNotificationCenter" -Value 1 -PropertyType DWord -Force
 }
 # Remove shortcuts from the Public Desktop
+
+
+
+
 $publicDesktopPath = "C:\Users\Public\Desktop"
 if (Test-Path $publicDesktopPath) {
     Remove-Item "$publicDesktopPath\*.lnk" -Force -ErrorAction SilentlyContinue
 }
+
+Write-Host "Deleting one drive..."
+
+$arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+if ($arch -match "64") {
+    Start-Process -FilePath "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+}
+else {
+    Start-Process -FilePath "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -NoNewWindow -Wait
+}
+
+Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft OneDrive"  -ErrorAction SilentlyContinue
 
 Write-Host "Done!"
 Read-Host
