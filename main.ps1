@@ -91,7 +91,7 @@ if (Confirm-Action "Copy to C:\setups ?") {
     # Start-Process powershell -ArgumentList "-NoExit", "-File", $scriptPath -Verb RunAs
 }
 
-Write-Host "Sign in into student and run C:\setups\scripts\setup.ps1"
+Write-Host "Sign in into student and run C:\setups\scripts\setup script"
 Read-Host 
 
 

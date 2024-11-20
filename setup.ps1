@@ -23,7 +23,7 @@ if (Confirm-Action "Run Installers") {
     $destinationPath = "C:\setups"
     $exeFiles = Get-ChildItem -Path $destinationPath -Filter *.exe
     foreach ($exe in $exeFiles) {
-        Start-Process -FilePath $exe.FullName -NoNewWindow
+        Start-Process -FilePath $exe.FullName -NoNewWindow -PassThru
     }
 }
 
